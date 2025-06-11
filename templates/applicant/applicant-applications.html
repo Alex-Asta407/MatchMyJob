@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}My Applications | MatchMyJob{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 py-12">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Applications</h1>
+      <p class="text-gray-600 dark:text-gray-400">Track and manage your job applications</p>
+    </div>
+
+    <!-- Applications List -->
+    {% if applications %}
+    <div class="space-y-6">
+      {% for application in applications %}
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div class="p-6">
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                {{ application.job.title }}
+              </h2>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">{{ application.job.company }}</p>
+
+              <div class="flex flex-wrap gap-4 mb-4">
+                <div class="flex items-center text-gray-600 dark:text-gray-400">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {{ application.job.location }}
+                </div>
+                <div class="flex items-center text-gray-600 dark:text-gray-400">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  {{ application.job.employment_type }}
+                </div>
+                {% if application.job.salary_range %}
+                <div class="flex items-center text-gray-600 dark:text-gray-400">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {{ application.job.salary_range }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="flex items-center">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 mr-2">Status:</span>
+                {% if application.status == 'pending' %}
+                <span
+                  class="px-3 py-1 text-sm font-medium text-yellow-800 dark:text-yellow-300 bg-yellow-100 dark:bg-yellow-900 rounded-full">
+                  Pending
+                </span>
+                {% elif application.status == 'applied' %}
+                <span
+                  class="px-3 py-1 text-sm font-medium text-green-800 dark:text-green-300 bg-green-100 dark:bg-green-900 rounded-full">
+                  Applied
+                </span>
+                {% elif application.status == 'accepted' %}
+                <span
+                  class="px-3 py-1 text-sm font-medium text-green-800 dark:text-green-300 bg-green-100 dark:bg-green-900 rounded-full">
+                  Accepted
+                </span>
+                {% elif application.status == 'rejected' %}
+                <span
+                  class="px-3 py-1 text-sm font-medium text-red-800 dark:text-red-300 bg-red-100 dark:bg-red-900 rounded-full">
+                  Rejected
+                </span>
+                {% elif application.status == 'interview' %}
+                <span
+                  class="px-3 py-1 text-sm font-medium text-green-800 dark:text-green-300 bg-green-100 dark:bg-green-900 rounded-full">
+                  Interview
+                </span>
+                {% elif application.status == 'offer' %}
+                <span
+                  class="px-3 py-1 text-sm font-medium text-green-800 dark:text-green-300 bg-green-100 dark:bg-green-900 rounded-full">
+                  Offer
+                </span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="flex flex-col items-end">
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                Applied {{ application.applied_at_str }}
+              </p>
+              <a href="/jobs/{{ application.job.id }}"
+                class="inline-flex items-center px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                View Job
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+      <svg class="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Applications Yet</h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">Start applying for jobs to track your applications here</p>
+      <a href="/jobs"
+        class="inline-flex items-center px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+        Browse Jobs
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

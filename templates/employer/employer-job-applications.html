@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 py-12">
+  <div class="max-w-7xl mx-auto px-4">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-3xl font-bold text-purple-800 dark:text-purple-300 mb-2">Applications</h2>
+          <p class="text-gray-600 dark:text-gray-300">Company: {{ job.company }}</p>
+        </div>
+        {% if not job.id %}
+        <div class="flex space-x-4">
+          <a href="/employer/applications"
+            class="px-4 py-2 text-sm font-medium {% if not filter %}bg-purple-700 text-white dark:bg-purple-600 dark:text-white{% else %}text-gray-700 dark:text-gray-300 hover:text-purple-700 dark:hover:text-purple-400{% endif %} rounded-lg">
+            All Applications
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if msg %}
+    <div class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-4 py-2 rounded mb-6">
+      {{ msg }}
+    </div>
+    {% endif %}
+
+    <!-- Applications List -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+      {% if applications %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="bg-gray-50 dark:bg-gray-700">
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Applicant</th>
+              {% if not job.id %}
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Job Title</th>
+              {% endif %}
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Resume</th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Status</th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Applied At</th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {% for app in applications %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ app.applicant.name }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{{ app.applicant.email }}</div>
+              </td>
+              {% if not job.id %}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900 dark:text-gray-100">{{ app.job.title }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{{ app.job.company }}</div>
+              </td>
+              {% endif %}
+              <td class="px-6 py-4 whitespace-nowrap">
+                {% if app.resume %}
+                <a href="/media/uploads/resumes/{{ app.applicant.id }}_{{ app.resume.filename }}"
+                  class="text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300 text-sm"
+                  target="_blank">
+                  View Resume
+                </a>
+                {% else %}
+                <span class="text-gray-500 dark:text-gray-400 text-sm">No resume</span>
+                {% endif %}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                  {% if app.status == 'pending' %}bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                  {% elif app.status == 'accepted' %}bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
+                  {% elif app.status == 'offer' %}bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200
+                  {% elif app.status == 'interview' %}bg-violet-100 dark:bg-violet-900 text-violet-800 dark:text-violet-200
+                  {% else %}bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200{% endif %}">
+                  {{ app.status|title }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                {{ app.submission_timestamp.strftime("%B %d, %Y") }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                {% if app.status == 'pending' %}
+                <form action="/employer/applications/{{ app.id }}/status" method="post"
+                  class="flex items-center space-x-2">
+                  <select name="new_status"
+                    class="border rounded px-2 py-1 text-sm dark:bg-gray-800 dark:text-white dark:border-gray-600">
+                    <option value="pending" {% if app.status=="pending" %}selected{% endif %}>Pending</option>
+                    <option value="offer" {% if app.status=="offer" %}selected{% endif %}>Offer</option>
+                    <option value="interview" {% if app.status=="interview" %}selected{% endif %}>Interview</option>
+                    <option value="accepted" {% if app.status=="accepted" %}selected{% endif %}>Accepted</option>
+                    <option value="rejected" {% if app.status=="rejected" %}selected{% endif %}>Rejected</option>
+                  </select>
+                  <textarea name="feedback" rows="1" placeholder="Feedback (optional)"
+                    class="border rounded px-2 py-1 text-sm dark:bg-gray-800 dark:text-white dark:border-gray-600"></textarea>
+                  <button type="submit"
+                    class="px-3 py-1 bg-purple-600 dark:bg-purple-700 text-white rounded text-sm hover:bg-purple-700 dark:hover:bg-purple-800">
+                    Update
+                  </button>
+                </form>
+                {% else %}
+                <form action="/employer/applications/{{ app.id }}/status" method="post" class="inline">
+                  <input type="hidden" name="new_status" value="pending">
+                  <button type="submit"
+                    class="text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300">
+                    Reset Status
+                  </button>
+                </form>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No applications</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          {% if filter == 'new' %}
+          No new applications at the moment.
+          {% else %}
+          No applications have been submitted yet.
+          {% endif %}
+        </p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

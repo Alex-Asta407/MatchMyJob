@@ -1,0 +1,126 @@
+{# templates/applicant-resume-edit.html #} {% extends "base.html" %} {% block
+content %}
+<div class="max-w-2xl mx-auto mt-8">
+  <h1 class="text-2xl font-bold mb-4">Edit Your Parsed Resume</h1>
+
+  <form action="/applicant/resume/{{ resume.id }}/edit" method="post" class="space-y-6">
+    <!-- 1) Skills -->
+    <div>
+      <label class="block font-semibold mb-1">Skills</label>
+      <div id="skills-container" class="flex flex-wrap gap-2">
+        {% if resume.skills %}
+        {% for skill in resume.skills %}
+        <div class="flex items-center gap-2 bg-purple-100 text-purple-800 rounded-full px-3 py-1">
+          <input type="text" name="skills" value="{{ skill }}" maxlength="100"
+            class="bg-transparent border-none focus:ring-0 p-0" />
+          <button type="button" onclick="this.parentElement.remove()" class="text-purple-600 hover:text-purple-800">
+            ×
+          </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <!-- One extra empty field for a brand-new skill -->
+        <div class="flex items-center gap-2 bg-purple-100 text-purple-800 rounded-full px-3 py-1">
+          <input type="text" name="skills" placeholder="(add new skill)" maxlength="100"
+            class="bg-transparent border-none focus:ring-0 p-0" />
+        </div>
+      </div>
+
+      <button type="button" onclick="addSkillField()" class="text-blue-600 text-sm mt-2">
+        + Add another skill
+      </button>
+    </div>
+
+    <!-- 2) Education Section -->
+    <div>
+      <label class="block font-semibold mb-1">Education</label>
+      <div id="education-container" class="space-y-2">
+        {% if resume.education %}
+        {% for edu in resume.education %}
+        <div class="flex items-center gap-2">
+          <input type="text" name="education" value="{{ edu }}" maxlength="100"
+            class="border rounded px-2 py-1 w-full" />
+          <button type="button" onclick="this.parentElement.remove()" class="text-red-600 hover:text-red-800">
+            ×
+          </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <!-- One extra empty field for new education -->
+        <div class="flex items-center gap-2">
+          <input type="text" name="education" placeholder="(add new education entry)" maxlength="100"
+            class="border rounded px-2 py-1 w-full" />
+        </div>
+      </div>
+
+      <button type="button" onclick="addEducationField()" class="text-blue-600 text-sm mt-2">
+        + Add another education entry
+      </button>
+    </div>
+
+    <!-- 3) Experience Section -->
+    <div>
+      <label class="block font-semibold mb-1">
+        Experience (bullet points or paragraphs)
+      </label>
+      <textarea name="experience" rows="6" maxlength="1000"
+        class="border rounded px-2 py-1 w-full">{{ resume.experience | join('\n') }}</textarea>
+    </div>
+
+    <!-- 4) Full Raw Text (reference only) -->
+    <div>
+      <label class="block font-semibold mb-1">Full Raw Text (read-only)</label>
+      <pre
+        class="bg-gray-100 border rounded p-3 overflow-x-auto max-h-64 whitespace-pre-wrap">{{ resume.raw_text }}</pre>
+    </div>
+
+    <!-- 5) Buttons -->
+    <div class="flex space-x-4">
+      <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+        Save Changes
+      </button>
+      <a href="/applicant/profile" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+  function addSkillField() {
+    const container = document.getElementById("skills-container");
+    const div = document.createElement("div");
+    div.className = "flex items-center gap-2 bg-purple-100 text-purple-800 rounded-full px-3 py-1";
+    div.innerHTML = `
+      <input
+        type="text"
+        name="skills"
+        placeholder="(add new skill)"
+        class="bg-transparent border-none focus:ring-0 p-0"
+      />
+      <button type="button" onclick="this.parentElement.remove()" class="text-purple-600 hover:text-purple-800">
+        ×
+      </button>
+    `;
+    container.appendChild(div);
+  }
+
+  function addEducationField() {
+    const container = document.getElementById("education-container");
+    const div = document.createElement("div");
+    div.className = "flex items-center gap-2";
+    div.innerHTML = `
+      <input
+        type="text"
+        name="education"
+        placeholder="(add new education entry)"
+        class="border rounded px-2 py-1 w-full"
+      />
+      <button type="button" onclick="this.parentElement.remove()" class="text-red-600 hover:text-red-800">
+        ×
+      </button>
+    `;
+    container.appendChild(div);
+  }
+</script>
+{% endblock %}

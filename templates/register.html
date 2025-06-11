@@ -1,0 +1,87 @@
+{% extends "base.html" %} {% block title %}Register | MatchMyJob{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 py-12">
+  <div class="max-w-md mx-auto px-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Create Account</h1>
+
+      {% if error %}
+      <div class="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-6">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/register" class="space-y-6">
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+          <input type="text" name="name" id="name" required maxlength="100"
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent dark:bg-gray-700 dark:text-white">
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+          <input type="email" name="email" id="email" required maxlength="100"
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent dark:bg-gray-700 dark:text-white">
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+          <input type="password" name="password" id="password" required maxlength="64"
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent dark:bg-gray-700 dark:text-white">
+        </div>
+
+        <div>
+          <label for="confirm_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirm
+            Password</label>
+          <input type="password" name="confirm_password" id="confirm_password" required maxlength="64"
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent dark:bg-gray-700 dark:text-white">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">I am a:</label>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <input type="radio" name="role" id="job_seeker" value="job_seeker" required
+                class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600"
+                onchange="toggleRoleFields()">
+              <label for="job_seeker" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                Job Seeker
+              </label>
+            </div>
+            <div class="flex items-center">
+              <input type="radio" name="role" id="employer" value="employer" required
+                class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600">
+              <label for="employer" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                Employer
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <input type="checkbox" name="terms" id="terms" required
+              class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="terms" class="text-gray-700 dark:text-gray-300">
+              I agree to the <a href="/terms" target="_blank"
+                class="text-purple-600 dark:text-purple-400 hover:underline">Terms and Conditions</a>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+          Register
+        </button>
+      </form>
+
+      <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+        Already have an account?
+        <a href="/login" class="text-purple-600 dark:text-purple-400 hover:underline">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

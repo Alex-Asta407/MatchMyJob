@@ -1,0 +1,44 @@
+{% comment %} {%if user.role == 'employer' %}
+  <h3 class="text-xl font-semibold mb-2">Your Job Postings</h3>
+  {% if jobs %}
+  <ul class="space-y-4">
+    {% for job in jobs %}
+    <li class="bg-white p-4 rounded shadow">
+      <div class="flex justify-between items-start">
+        <div>
+          <h4 class="text-lg font-semibold text-purple-700">{{ job.title }}</h4>
+          <p class="text-sm text-gray-600 mb-2">{{ job.description }}</p>
+          <p class="text-xs text-gray-500 mb-1">Posted: {{ job.posted_at }}</p>
+          <div>
+            <span class="text-xs text-gray-500">Skills:</span>
+            {% if job.skill_list %} {% for skill in job.skill_list %}
+            <span
+              class="inline-block bg-gray-200 px-2 py-1 rounded mr-1 text-xs text-gray-800"
+              >{{ skill }}</span
+            >
+            {% endfor %} {% else %}
+            <span class="text-xs text-gray-500">— none listed —</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex flex-col space-y-2">
+          <a
+            href="/employer/edit-job/{{ job.id }}"
+            class="text-yellow-600 hover:underline text-sm"
+            >Edit</a
+          >
+          <form
+            action="/employer/delete-job/{{ job.id }}"
+            method="post"
+            onsubmit="return confirm('Delete this posting?');"
+          >
+            <button class="text-red-600 hover:underline text-sm">Delete</button>
+          </form>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-gray-600">You haven't posted any jobs yet.</p>
+  {% endif %} {% endif %} {% endcomment %}

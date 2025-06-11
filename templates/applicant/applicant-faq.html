@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto mt-8">
+    <h1 class="text-2xl font-bold mb-4">Applicant FAQ</h1>
+    <div class="mb-6">
+        <a href="/applicant/profile" class="text-blue-600 hover:underline">&larr; Back to Profile</a>
+    </div>
+    <div class="mb-8 p-4 bg-blue-50 dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold mb-2 text-blue-800 dark:text-blue-200">How is my resume score calculated?</h2>
+        <ul class="list-disc pl-6 text-gray-700 dark:text-gray-300 mb-2">
+            <li><b>Skills</b>: 25% — Points for having skills, more for 5+ and 10+ skills.</li>
+            <li><b>Experience</b>: 25% — Points for having experience, more for 2+ and 3+ jobs, and for detailed
+                descriptions.</li>
+            <li><b>Education</b>: 25% — Points for having education, more for 2+ and 3+ entries, and for detailed
+                entries.</li>
+            <li><b>Contact & Additional Info</b>: 25% — Points for having contact info, resume length, and common
+                contact indicators (email, phone, LinkedIn, etc.).</li>
+        </ul>
+        <p class="text-gray-700 dark:text-gray-300 mb-2">
+            The total score is capped at 100%. Hover over the percentage on your profile to see a qualitative label.
+        </p>
+        <div class="mb-2">
+            <b>Resume Completeness & Match Percentage Labels:</b>
+            <ul class="list-disc pl-6 text-gray-700 dark:text-gray-300 mt-1">
+                <li><b>Excellent</b>: 80–100%</li>
+                <li><b>Good</b>: 60–79%</li>
+                <li><b>Average</b>: 40–59%</li>
+                <li><b>Needs Improvement</b>: below 40%</li>
+            </ul>
+            <p class="text-gray-700 dark:text-gray-300 mt-2">
+                These labels appear as tooltips when you hover over the score or match percentage in the app.
+            </p>
+        </div>
+    </div>
+    <div class="mb-8">
+        <h2 class="text-lg font-semibold mb-2">Other Frequently Asked Questions</h2>
+        <ul class="list-disc pl-6 text-gray-700 dark:text-gray-300">
+            <li>How can I improve my resume score? — Add more relevant skills, detailed experience, and complete your
+                education and contact info.</li>
+            <li>Why is my education or experience missing? — Make sure your resume uses clear section headers and
+                standard formatting.</li>
+            <li>Who can see my resume? — Only you and employers you apply to can view your resume.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

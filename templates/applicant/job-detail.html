@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Job Details | MatchMyJob{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Back button -->
+    <a href="/jobs"
+      class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 mb-6">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to Jobs
+    </a>
+
+    <!-- Job Card -->
+    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden">
+      <!-- Header -->
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-start">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ job.title }}</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">{{ job.company }}</p>
+          </div>
+          {% if job.salary_range %}
+          <div
+            class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-4 py-2 rounded-full text-sm font-medium">
+            {{ job.salary_range }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Job Details -->
+      <div class="p-6">
+        <!-- Location and Type -->
+        <div class="flex flex-wrap gap-4 mb-6">
+          {% if job.location %}
+          <div class="flex items-center text-gray-600 dark:text-gray-300">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {{ job.location }}
+          </div>
+          {% endif %}
+          {% if job.employment_type %}
+          <div class="flex items-center text-gray-600 dark:text-gray-300">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            {{ job.employment_type }}
+          </div>
+          {% endif %}
+          {% if job.deadline %}
+          <div class="flex items-center text-gray-600 dark:text-gray-300">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Apply by {{ job.deadline.strftime('%B %d, %Y') }}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Required Skills -->
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Required Skills</h3>
+          <div class="flex flex-wrap gap-2">
+            {% if job.skills_required %}
+            {% if job.skills_required is string %}
+            {% set skills = job.skills_required.replace('[', '').replace(']', '').replace('"', '').split(',') %}
+            {% else %}
+            {% set skills = job.skills_required %}
+            {% endif %}
+            {% for skill in skills %}
+            <span
+              class="inline-block bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full text-sm text-gray-800 dark:text-gray-200">
+              {{ skill.strip() }}
+            </span>
+            {% endfor %}
+            {% else %}
+            <span class="text-gray-500 dark:text-gray-400">No specific skills required</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Job Description -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Job Description</h3>
+          <div class="prose max-w-none text-gray-600 dark:text-gray-300">
+            {{ job.description | safe }}
+          </div>
+        </div>
+
+        <!-- Application Form -->
+        {% if user.role == "job_seeker" %}
+        {% if already_applied %}
+        <div
+          class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 text-blue-800 dark:text-blue-200">
+          <p class="font-medium">You have already applied for this position.</p>
+        </div>
+        {% else %}
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Apply for this Position</h3>
+          <form action="/jobs/{{ job.id }}/apply" method="POST" class="space-y-4">
+            <div>
+              <label for="resume" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select
+                Resume</label>
+              <select name="resume_id" id="resume" required
+                class="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:text-white">
+                <option value="">Choose a resume...</option>
+                {% for resume in user_resumes %}
+                <option value="{{ resume.id }}">{{ resume.filename }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit"
+              class="w-full bg-blue-600 dark:bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+              Submit Application
+            </button>
+          </form>
+        </div>
+        {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Success Message -->
+    {% if msg %}
+    <div
+      class="mt-4 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg text-green-800 dark:text-green-200">
+      {{ msg }}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

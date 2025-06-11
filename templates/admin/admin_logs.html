@@ -1,0 +1,117 @@
+{% extends "base.html" %} {% block title %}Security Logs | Admin{% endblock %} {% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 py-12">
+  <section class="max-w-6xl mx-auto px-4">
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h2 class="text-3xl font-bold text-purple-700 dark:text-purple-400">Security Logs</h2>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Monitor system activity and security events</p>
+      </div>
+      <a href="/admin"
+        class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+        <i class="fas fa-arrow-left mr-2 text-gray-600 dark:text-gray-400"></i>
+        Back to Dashboard
+      </a>
+    </div>
+
+    <div
+      class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 dark:bg-gray-700/50">
+              <th class="px-6 py-4 text-left text-sm font-medium text-gray-600 dark:text-gray-400">Event</th>
+              <th class="px-6 py-4 text-left text-sm font-medium text-gray-600 dark:text-gray-400">User</th>
+              <th class="px-6 py-4 text-left text-sm font-medium text-gray-600 dark:text-gray-400">IP Address</th>
+              <th class="px-6 py-4 text-left text-sm font-medium text-gray-600 dark:text-gray-400">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            {% for log in logs %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  {% if log.event_type == 'login' %}
+                  <span
+                    class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center mr-3">
+                    <i class="fas fa-sign-in-alt text-green-600 dark:text-green-400"></i>
+                  </span>
+                  <span class="text-sm font-medium text-gray-900 dark:text-white">Login</span>
+                  {% elif log.event_type == 'failed_login' %}
+                  <span
+                    class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center mr-3">
+                    <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400"></i>
+                  </span>
+                  <span class="text-sm font-medium text-gray-900 dark:text-white">Failed Login</span>
+                  {% else %}
+                  <span
+                    class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3">
+                    <i class="fas fa-info-circle text-blue-600 dark:text-blue-400"></i>
+                  </span>
+                  <span class="text-sm font-medium text-gray-900 dark:text-white">{{ log.event_type }}</span>
+                  {% endif %}
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  <span
+                    class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center mr-3">
+                    <i class="fas fa-user text-purple-600 dark:text-purple-400"></i>
+                  </span>
+                  <span class="text-sm text-gray-900 dark:text-white">{{ log.user_email }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ log.ip_address }}</span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ log.timestamp }}</span>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4" class="px-6 py-8 text-center text-gray-600 dark:text-gray-400">
+                <div class="flex flex-col items-center">
+                  <div
+                    class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-history text-gray-400 dark:text-gray-500 text-2xl"></i>
+                  </div>
+                  <p class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Logs Found</p>
+                  <p>There are no security logs to display at the moment.</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if total_pages > 1 %}
+      <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-600 dark:text-gray-400">
+            Page {{ current_page }} of {{ total_pages }}
+          </div>
+          <div class="flex items-center space-x-2">
+            {% if has_previous %}
+            <a href="/admin/logs?page={{ current_page - 1 }}"
+              class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <i class="fas fa-chevron-left mr-2 text-gray-600 dark:text-gray-400"></i>
+              Previous
+            </a>
+            {% endif %}
+
+            {% if has_next %}
+            <a href="/admin/logs?page={{ current_page + 1 }}"
+              class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              Next
+              <i class="fas fa-chevron-right ml-2 text-gray-600 dark:text-gray-400"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

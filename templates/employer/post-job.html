@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Post New Job | MatchMyJob{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 py-12">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-purple-800 dark:text-purple-400">Post New Job</h1>
+        <a href="/employer/employer-jobs"
+          class="text-purple-700 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300">
+          <i class="fas fa-arrow-left mr-2"></i>Back to Jobs
+        </a>
+      </div>
+
+      {% if errors %}
+      <div class="mb-6 p-4 bg-red-100 dark:bg-red-900 rounded">
+        <ul class="list-disc list-inside text-red-700 dark:text-red-300">
+          {% for e in errors %}
+          <li>{{ e }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/employer/post-job" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Job Title</label>
+            <input type="text" id="title" name="title" required maxlength="100" value="{{ title or '' }}"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="e.g. Senior Software Engineer">
+          </div>
+
+          <div>
+            <label for="company" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company</label>
+            <input type="text" id="company" name="company" required maxlength="100" value="{{ company|default('') }}"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+              placeholder="e.g. RankBoost">
+          </div>
+
+          <div>
+            <label for="employment_type"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Employment Type</label>
+            <select id="employment_type" name="employment_type" required
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+              <option value="">Select type</option>
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Contract">Contract</option>
+              <option value="Internship">Internship</option>
+              <option value="Remote">Remote</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="location"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
+            <input type="text" id="location" name="location" required maxlength="100"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="e.g. New York, NY or Remote">
+          </div>
+
+          <div>
+            <label for="salary_range" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Salary
+              Range</label>
+            <select id="salary_range" name="salary_range" required
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+              <option value="">Select range</option>
+              <option value="0-30000">$0 - $30,000</option>
+              <option value="30000-50000">$30,000 - $50,000</option>
+              <option value="50000-75000">$50,000 - $75,000</option>
+              <option value="75000-100000">$75,000 - $100,000</option>
+              <option value="100000+">$100,000+</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Job
+            Description</label>
+          <textarea id="description" name="description" rows="6" required maxlength="1000"
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Describe the role, responsibilities, and requirements...">{{ description or '' }}</textarea>
+        </div>
+
+        <div>
+          <label for="skills_required" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Required
+            Skills</label>
+          <input type="text" id="skills_required" name="skills_required" required maxlength="100"
+            pattern="[^,]+(,[^,]+)*"
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="e.g. Python, JavaScript, React (comma separated)" value="{{ skills_required or '' }}">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Separate skills with commas</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="deadline" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Application
+              Deadline</label>
+            <input type="date" id="deadline" name="deadline" value="{{ deadline or '' }}"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+          </div>
+          <div>
+            <label for="experience_level"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Experience Level</label>
+            <select id="experience_level" name="experience_level" required
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+              <option value="">Select level</option>
+              <option value="Entry Level">Entry Level</option>
+              <option value="Mid Level">Mid Level</option>
+              <option value="Senior Level">Senior Level</option>
+              <option value="Lead">Lead</option>
+              <option value="Manager">Manager</option>
+            </select>
+          </div>
+
+          <div class="md:col-span-2 flex justify-end space-x-4">
+            <button type="button" onclick="window.location.href='/employer/jobs'"
+              class="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors">
+              Cancel
+            </button>
+            <button type="submit"
+              class="px-6 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors">
+              Post Job
+            </button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %} {% block title %}Edit Profile | MatchMyJob{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 py-12">
+    <div class="max-w-2xl mx-auto px-4">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-gray-900">Edit Company Profile</h2>
+                <a href="/employer/profile"
+                    class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                </a>
+            </div>
+
+            <form method="post" action="/employer/profile/edit" class="space-y-6">
+                <!-- Company Information -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900">Company Information</h3>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                        <input type="text" name="company_name" value="{{ user.company_name }}"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
+                            required />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" name="email" value="{{ user.email }}"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
+                            required />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Company Address</label>
+                        <input type="text" name="company_address" value="{{ user.company_address or '' }}"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                        <input type="url" name="website" value="{{ user.website or '' }}"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Company Description</label>
+                        <textarea name="company_description" rows="4"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">{{ user.company_description or '' }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900">Contact Information</h3>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" name="phone" value="{{ user.phone or '' }}"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" />
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end space-x-4">
+                    <a href="/employer/profile" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                        class="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

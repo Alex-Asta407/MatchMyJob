@@ -1,0 +1,6 @@
+# New dependencies for OCR and PDF handling
+pytesseract
+pdf2image
+PyPDF2
+Pillow
+pdfplumber
