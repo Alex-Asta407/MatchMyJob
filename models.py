@@ -43,6 +43,13 @@ class User(Base):
 
     def set_password(self, password):
         from auth.tokenhash import hash_password
+        from auth.password_validation import password_validator
+        
+        # Validate password
+        is_valid, errors = password_validator.validate_password(password)
+        if not is_valid:
+            raise ValueError("\n".join(errors))
+            
         self.hashed_password = hash_password(password)
 
 class Resume(Base):

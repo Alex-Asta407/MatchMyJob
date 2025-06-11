@@ -152,7 +152,16 @@ async def register(
         role=role,
         verification_token=verification_token
     )
-    new_user.set_password(password)
+    try:
+        new_user.set_password(password)
+    except ValueError as e:
+        return templates.TemplateResponse(
+            "register.html",
+            {
+                "request": request,
+                "error": str(e)
+            }
+        )
 
     # Set role-specific fields
     if role == "job_seeker":
@@ -312,14 +321,12 @@ def reset_password_post(
         return RedirectResponse("/login?msg=Invalid+or+expired+reset+link", status_code=303)
 
     # Password validation
-    forbidden_chars = r'[\}\{":~,]'
-    if len(password) < 8:
-        return RedirectResponse(f"/reset-password?token={token}&error=Password+must+be+at+least+8+characters+long", status_code=303)
-    if re.search(forbidden_chars, password):
-        return RedirectResponse(f"/reset-password?token={token}&error=Password+cannot+contain+any+of+the+following+characters:+}}+{{+%5C%22+:+~+%2C", status_code=303)
+    try:
+        user.set_password(password)
+    except ValueError as e:
+        return RedirectResponse(f"/reset-password?token={token}&error={str(e).replace(' ', '+')}", status_code=303)
 
-    # Update password and clear reset token
-    user.hashed_password = hash_password(password)
+    # Clear reset token
     user.reset_token = None
     user.reset_token_expires = None
     db.commit()
