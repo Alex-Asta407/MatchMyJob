@@ -11,16 +11,12 @@ from dataclasses import dataclass
 from pathlib import Path
 import pdfplumber
 import logging
-from utils import normalize_skill
 
 # PDF extraction
 from pdfminer.high_level import extract_text as extract_pdf_text
 from pdfminer.pdfparser import PDFSyntaxError
-from PyPDF2 import PdfReader
-from pdf2image import convert_from_path
 
-# OCR
-import pytesseract
+
 
 # DOCX extraction
 from docx import Document as DocxDocument

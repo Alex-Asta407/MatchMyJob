@@ -445,31 +445,55 @@ def edit_profile_form(
     return html
 
 @router.post("/profile/edit")
-def update_profile(
+async def edit_profile(
     request: Request,
-    company_name: str = Form(...),
+    name: str = Form(...),
     email: str = Form(...),
-    company_address: str = Form(None),
-    website: str = Form(None),
+    preferred_location: str = Form(None),
+    desired_job_title: str = Form(None),
+    key_skills: str = Form(None),
+    salary_range: str = Form(None),
     company_description: str = Form(None),
-    phone: str = Form(None),
-    user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    if user.role != "employer":
-        raise HTTPException(403, "Access denied")
-    
+    if not current_user.role == "employer":
+        raise HTTPException(status_code=403, detail="Only employers can edit company profiles")
+
+    # Check if email is already taken by another user
+    existing_user = db.query(User).filter(User.email == email, User.id != current_user.id).first()
+    if existing_user:
+        return templates.TemplateResponse(
+            "employer/edit-profile.html",
+            {
+                "request": request,
+                "user": current_user,
+                "error": "Email is already taken by another user"
+            }
+        )
+
     # Update user profile
-    user.company_name = company_name
-    user.email = email
-    user.company_address = company_address
-    user.website = website
-    user.company_description = company_description
-    user.phone = phone
-    
-    db.commit()
-    
-    return RedirectResponse("/employer/profile?msg=Profile+updated+successfully", status_code=303)
+    current_user.name = name
+    current_user.email = email
+    current_user.preferred_location = preferred_location
+    current_user.desired_job_title = desired_job_title
+    current_user.key_skills = key_skills
+    current_user.salary_range = salary_range
+    current_user.company_description = company_description
+
+    try:
+        db.commit()
+        return RedirectResponse(url="/employer/profile", status_code=303)
+    except Exception as e:
+        db.rollback()
+        return templates.TemplateResponse(
+            "employer/edit-profile.html",
+            {
+                "request": request,
+                "user": current_user,
+                "error": "Failed to update profile. Please try again."
+            }
+        )
 
 @router.get("/employer-jobs", response_class=HTMLResponse)
 async def view_employer_jobs(

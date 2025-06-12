@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, status
+from fastapi import APIRouter, Request, Depends, HTTPException, status, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -140,8 +140,10 @@ def admin_resumes(
 @router.post("/admin/delete-user/{user_id}")
 def admin_delete_user(
     user_id: int,
+    request: Request,
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin)
+    admin: User = Depends(get_current_admin),
+    reason: str = Form("")
 ):
     """
     Delete a user. Protected action.
@@ -156,6 +158,9 @@ def admin_delete_user(
     db.delete(user_to_delete)
     db.commit()
     log_event(db, "Admin Action", f"Admin deleted user {user_to_delete.email}", email=admin.email)
+
+    # Send email to user with reason
+    send_violation_email_user(user_to_delete.email, reason)
     return RedirectResponse("/admin/users?msg=User+deleted", status_code=303)
 
 
@@ -163,7 +168,8 @@ def admin_delete_user(
 def admin_delete_resume(
     resume_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin)
+    admin: User = Depends(get_current_admin),
+    reason: str = Form("")
 ):
     """
     Delete a resume and notify the user via email. Protected action.
@@ -185,7 +191,7 @@ def admin_delete_resume(
     db.commit()
 
     # Notify the user via email
-    send_violation_email_resume(user.email, resume.filename)
+    send_violation_email_resume(user.email, resume.filename, reason)
     return RedirectResponse("/admin/resumes?msg=Resume+deleted+and+user+notified", status_code=303)
 
 
@@ -193,7 +199,8 @@ def admin_delete_resume(
 def admin_delete_job(
     job_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(get_current_admin)
+    admin: User = Depends(get_current_admin),
+    reason: str = Form("")
 ):
     """
     Delete a job posting and notify the employer. Protected action.
@@ -213,19 +220,54 @@ def admin_delete_job(
         owner.email,
         "MatchMyJob Job Removal Notification",
         f"Hi {owner.name},\n\n"
-        f"Your job posting “{job.title}” was removed because it violated our guidelines.\n\n"
-        "If you believe this was a mistake, please contact support."
+        f"Your job posting “{job.title}” was removed because it violated our guidelines."
+        + (f"\nReason: {reason}" if reason else "")
+        + "\n\nIf you believe this was a mistake, please contact support."
     )
     return RedirectResponse("/admin/jobs?msg=Job+deleted+and+user+notified", status_code=303)
 
 
-def send_violation_email_resume(user_email: str, resume_filename: str):
+@router.get("/admin/edit-job/{job_id}", response_class=HTMLResponse)
+async def admin_edit_job_form(job_id: int, request: Request, db: Session = Depends(get_db)):
+    job = db.query(JobPosting).filter(JobPosting.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return templates.TemplateResponse("admin/edit-job.html", {"request": request, "job": job})
+
+
+@router.post("/admin/edit-job/{job_id}")
+async def admin_edit_job_submit(
+    job_id: int,
+    request: Request,
+    title: str = Form(...),
+    company: str = Form(...),
+    location: str = Form(...),
+    employment_type: str = Form(...),
+    salary_range: str = Form(...),
+    description: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    job = db.query(JobPosting).filter(JobPosting.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    job.title = title
+    job.company = company
+    job.location = location
+    job.employment_type = employment_type
+    job.salary_range = salary_range
+    job.description = description
+    db.commit()
+    return RedirectResponse("/admin/jobs", status_code=303)
+
+
+def send_violation_email_resume(user_email: str, resume_filename: str, reason: str = ""):
     """
     Send an email notifying the user that their resume was removed.
     """
     msg = EmailMessage()
     msg.set_content(
         f"Your resume “{resume_filename}” was removed because it violated our guidelines."
+        + (f"\nReason: {reason}" if reason else "")
     )
     msg["Subject"] = "MatchMyJob Resume Removal Notification"
     msg["From"] = os.getenv("ADMIN_EMAIL")           # e.g. admin@matchmyjob.com
@@ -253,3 +295,24 @@ def send_notification_email_jobpost(to_address: str, subject: str, body: str):
         smtp.starttls()
         smtp.login(os.getenv("SENDER_EMAIL"), os.getenv("APP_PASSWORD"))
         smtp.send_message(msg)
+
+
+def send_violation_email_user(user_email: str, reason: str):
+    """
+    Send an email notifying the user that their account was removed, with a reason.
+    """
+    msg = EmailMessage()
+    msg.set_content(
+        f"Your account was removed by the admin. Reason: {reason if reason else 'No reason provided.'}"
+    )
+    msg["Subject"] = "MatchMyJob Account Removal Notification"
+    msg["From"] = os.getenv("ADMIN_EMAIL")
+    msg["To"] = user_email
+
+    try:
+        with smtplib.SMTP(os.getenv("SMTP_HOST"), int(os.getenv("SMTP_PORT"))) as smtp:
+            smtp.starttls()
+            smtp.login(os.getenv("SENDER_EMAIL"), os.getenv("APP_PASSWORD"))
+            smtp.send_message(msg)
+    except Exception as e:
+        print("Failed to send violation email to user:", e)

@@ -43,8 +43,14 @@
 
               <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <i class="fas fa-clock mr-2"></i>
-                Posted {{ job.created_at }}
+                Posted {{ job.created_at.strftime('%Y-%m-%d %H:%M') if job.created_at else '' }}
               </div>
+              {% if job.employer %}
+              <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+                <i class="fas fa-user mr-2"></i>
+                Created by: {{ job.employer.name }} ({{ job.employer.email }})
+              </div>
+              {% endif %}
             </div>
 
             <div class="flex items-center space-x-3 ml-6">

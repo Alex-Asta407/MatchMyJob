@@ -81,7 +81,7 @@
         </div>
         <div>
           <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Expected Salary Range</h4>
-          <p class="text-gray-900 dark:text-white">{{ user.salary_range or 'Not specified' }}</p>
+          <p class="text-gray-900 dark:text-white">${{ user.salary_range or 'Not specified' }}</p>
         </div>
       </div>
     </div>
@@ -140,163 +140,199 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Your Resumes</h3>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          Showing resume {{ current_page }} of {{ total_pages }}
+        </div>
       </div>
 
-      {% if resumes %}
-      <div class="space-y-6">
-        {% for r in resumes %}
-        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <div class="flex items-center mb-4">
-                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 mr-2" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <div class="flex items-center">
-                  <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ r.filename }}</h4>
-                  <!-- Quality Indicator Circle -->
-                  <div class="relative ml-4">
-                    <div class="w-12 h-12">
-                      <svg class="w-full h-full" viewBox="0 0 100 100">
-                        <!-- Background circle -->
-                        <circle class="text-gray-200 dark:text-gray-700" stroke-width="8" stroke="currentColor"
-                          fill="transparent" r="40" cx="50" cy="50" />
-                        <!-- Progress circle -->
-                        <circle class="text-purple-500" stroke-width="8" stroke-dasharray="251.2"
-                          stroke-dashoffset="{{ (100 - (r.completeness or 0)) * 2.512 }}" stroke-linecap="round"
-                          stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
-                      </svg>
-                      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                        {% set c = r.completeness or 0 %}
-                        {% if c >= 80 %}
-                        {% set label = 'Excellent' %}
-                        {% elif c >= 60 %}
-                        {% set label = 'Good' %}
-                        {% elif c >= 40 %}
-                        {% set label = 'Average' %}
-                        {% else %}
-                        {% set label = 'Needs Improvement' %}
-                        {% endif %}
-                        <span class="text-sm font-bold text-gray-800 dark:text-gray-200 group relative cursor-pointer"
-                          title="{{ label }}">
-                          {{ c }}%
-                          <span
-                            class="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">
-                            {{ label }}
-                          </span>
+      {% if resume %}
+      <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="flex items-center mb-4">
+              <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 mr-2" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <div class="flex items-center">
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ resume.filename }}</h4>
+                <!-- Quality Indicator Circle -->
+                <div class="relative ml-4">
+                  <div class="w-12 h-12">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                      <!-- Background circle -->
+                      <circle class="text-gray-200 dark:text-gray-700" stroke-width="8" stroke="currentColor"
+                        fill="transparent" r="40" cx="50" cy="50" />
+                      <!-- Progress circle -->
+                      <circle class="text-purple-500" stroke-width="8" stroke-dasharray="251.2"
+                        stroke-dashoffset="{{ (100 - (resume.completeness or 0)) * 2.512 }}" stroke-linecap="round"
+                        stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                    </svg>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                      {% set c = resume.completeness or 0 %}
+                      {% if c >= 80 %}
+                      {% set label = 'Excellent' %}
+                      {% elif c >= 60 %}
+                      {% set label = 'Good' %}
+                      {% elif c >= 40 %}
+                      {% set label = 'Average' %}
+                      {% else %}
+                      {% set label = 'Needs Improvement' %}
+                      {% endif %}
+                      <span class="text-sm font-bold text-gray-800 dark:text-gray-200 group relative cursor-pointer"
+                        title="{{ label }}">
+                        {{ c }}%
+                        <span
+                          class="absolute left-1/2 -translate-x-1/2 mt-2 w-max bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">
+                          {{ label }}
                         </span>
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                Uploaded {{ r.uploaded_at_str }}
-              </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Uploaded {{ resume.uploaded_at_str }}
+            </p>
 
-              <div class="mb-4">
-                <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Skills</h5>
-                <div class="flex flex-wrap gap-2">
-                  {% if r.skills %}
-                  {% for skill in r.skills %}
-                  <span
-                    class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-300 rounded-full text-sm">
-                    {{ skill }}
-                  </span>
-                  {% endfor %}
-                  {% else %}
-                  <span class="text-sm text-gray-500 dark:text-gray-400">No skills parsed</span>
-                  {% endif %}
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Education</h5>
-                <div class="space-y-2">
-                  {% if r.education %}
-                  {% for edu in r.education %}
-                  <div class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ edu | safe }}
-                  </div>
-                  {% endfor %}
-                  {% else %}
-                  <p class="text-sm text-gray-500 dark:text-gray-400">No education information found.</p>
-                  {% endif %}
-                </div>
-              </div>
-
-              <div>
-                <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Experience</h5>
-                <div class="space-y-2">
-                  {% if r.experience %}
-                  {% for exp in r.experience %}
-                  <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">
-                    {{ exp | safe }}
-                  </div>
-                  {% endfor %}
-                  {% else %}
-                  <p class="text-sm text-gray-500 dark:text-gray-400">No experience section found.</p>
-                  {% endif %}
-                </div>
+            <div class="mb-4">
+              <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Skills</h5>
+              <div class="flex flex-wrap gap-2">
+                {% if resume.skills %}
+                {% for skill in resume.skills %}
+                <span
+                  class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-300 rounded-full text-sm">
+                  {{ skill }}
+                </span>
+                {% endfor %}
+                {% else %}
+                <span class="text-sm text-gray-500 dark:text-gray-400">No skills parsed</span>
+                {% endif %}
               </div>
             </div>
 
-            <div class="flex flex-col space-y-2 ml-6">
-              <a href="/applicant/resume/{{ r.id }}/edit"
-                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-purple-700 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-                Edit
-              </a>
+            <div class="mb-4">
+              <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Education</h5>
+              <div class="space-y-2">
+                {% if resume.education %}
+                {% for edu in resume.education %}
+                {% if 'Assets:' not in edu and 'Software:' not in edu and 'Social Media:' not in edu %}
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ edu | safe }}
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <p class="text-sm text-gray-500 dark:text-gray-400">No education information found.</p>
+                {% endif %}
+              </div>
+            </div>
 
-              <form method="post" action="/applicant/resume/reparse/{{ r.id }}" class="inline">
-                <button
-                  class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Re-parse
-                </button>
-              </form>
-
-              <form method="post" action="/applicant/resume/delete/{{ r.id }}"
-                onsubmit="return confirm('Are you sure you want to delete this resume?');" class="inline">
-                <button
-                  class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-700 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
-                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Delete
-                </button>
-              </form>
+            <div>
+              <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Experience</h5>
+              <div class="space-y-2">
+                {% if resume.experience %}
+                {% for exp in resume.experience %}
+                {% if not (exp.startswith('Assets:') or exp.startswith('Software:') or exp.startswith('Social Media:'))
+                %}
+                <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">
+                  {{ exp | safe }}
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <p class="text-sm text-gray-500 dark:text-gray-400">No experience section found.</p>
+                {% endif %}
+              </div>
             </div>
           </div>
+
+          <div class="flex flex-col space-y-2 ml-6">
+            <a href="/applicant/resume/{{ resume.id }}/edit"
+              class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-purple-700 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              Edit
+            </a>
+            <form action="/applicant/resume/reparse/{{ resume.id }}" method="post" style="display:inline;">
+              <button type="submit"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Reparse
+              </button>
+            </form>
+            <form action="/applicant/resume/delete/{{ resume.id }}" method="post" class="inline">
+              <button type="submit"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-700 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+                onclick="return confirm('Are you sure you want to delete this resume?')">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete
+              </button>
+            </form>
+          </div>
         </div>
-        {% endfor %}
       </div>
+
+      <!-- Pagination Controls -->
+      {% if total_pages > 1 %}
+      <div class="mt-6 flex justify-center space-x-2">
+        {% if current_page > 1 %}
+        <a href="/applicant/profile?page={{ current_page - 1 }}"
+          class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Previous
+        </a>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+        <a href="/applicant/profile?page={{ p }}"
+          class="inline-flex items-center px-4 py-2 text-sm font-medium {% if p == current_page %}text-white bg-purple-600 hover:bg-purple-700{% else %}text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600{% endif %} border border-gray-300 dark:border-gray-600 rounded-md">
+          {{ p }}
+        </a>
+        {% endfor %}
+
+        {% if current_page < total_pages %} <a href="/applicant/profile?page={{ current_page + 1 }}"
+          class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">
+          Next
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+          </a>
+          {% endif %}
+      </div>
+      {% endif %}
+
       {% else %}
-      <div class="text-center py-12">
-        <svg class="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor"
+      <div class="text-center py-8">
+        <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor"
           viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Resumes Yet</h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">Upload your first resume to start matching with jobs</p>
-        <a href="/resume"
-          class="inline-flex items-center px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Upload Resume
-        </a>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No resumes</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by uploading your first resume.</p>
+        <div class="mt-6">
+          <a href="/resume"
+            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Upload Resume
+          </a>
+        </div>
       </div>
       {% endif %}
     </div>
@@ -310,6 +346,24 @@
       <p class="mt-2 text-gray-700 dark:text-gray-300">
         <a href="/applicant/faq" class="text-blue-600 hover:underline">FAQ</a>.
       </p>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-red-100 dark:border-red-900/30">
+      <h3 class="text-xl font-semibold text-red-700 dark:text-red-400 mb-4">Danger Zone</h3>
+      <p class="text-gray-600 dark:text-gray-300 mb-4">Once you delete your account, there is no going back. Please be
+        certain.</p>
+      <form method="post" action="/delete-account"
+        onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+        <button type="submit"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-800">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Delete Account
+        </button>
+      </form>
     </div>
   </div>
 </div>

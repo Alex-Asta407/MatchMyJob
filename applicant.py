@@ -20,24 +20,34 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 @router.get("/profile", response_class=HTMLResponse)
 def applicant_profile(
     request: Request,
+    page: int = 1,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     if user.role != "job_seeker":
         raise HTTPException(status_code=403, detail="Only job seekers can access this page")
     
-    # Fetch user's resumes
-    resumes = (
+    # Calculate pagination
+    per_page = 1  # Show one resume per page
+    total_resumes = db.query(Resume).filter(Resume.user_id == user.id).count()
+    total_pages = (total_resumes + per_page - 1) // per_page
+    
+    # Ensure page is within valid range
+    page = max(1, min(page, total_pages)) if total_pages > 0 else 1
+    
+    # Fetch the resume for the current page
+    resume = (
         db.query(Resume)
           .filter(Resume.user_id == user.id)
           .order_by(Resume.uploaded_at.desc())
-          .all()
+          .offset((page - 1) * per_page)
+          .limit(per_page)
+          .first()
     )
     
-    # Process each resume to deserialize JSON data
-    for resume in resumes:
+    # Process resume data if it exists
+    if resume:
         resume.uploaded_at_str = resume.uploaded_at.strftime("%B %d, %Y")
-        # Use helper methods to get the data
         resume.skills = resume.get_skills()
         resume.experience = resume.get_experience()
         resume.education = resume.get_education()
@@ -47,7 +57,10 @@ def applicant_profile(
         {
             "request": request,
             "user": user,
-            "resumes": resumes
+            "resume": resume,
+            "current_page": page,
+            "total_pages": total_pages,
+            "total_resumes": total_resumes
         }
     )
     html.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -88,11 +101,14 @@ async def update_profile(
     form_data = await request.form()
     
     # Update user profile fields
-    user.full_name = form_data.get("full_name", user.full_name)
-    user.location = form_data.get("location", user.location)
-    user.phone = form_data.get("phone", user.phone)
-    user.preferred_job_types = form_data.get("preferred_job_types", user.preferred_job_types)
-    user.preferred_locations = form_data.get("preferred_locations", user.preferred_locations)
+    user.name = form_data.get("name", user.name)
+    user.email = form_data.get("email", user.email)
+    user.current_job_title = form_data.get("current_job_title", user.current_job_title)
+    user.years_experience = form_data.get("years_experience", user.years_experience)
+    user.desired_job_title = form_data.get("desired_job_title", user.desired_job_title)
+    user.key_skills = form_data.get("key_skills", user.key_skills)
+    user.preferred_location = form_data.get("preferred_location", user.preferred_location)
+    user.salary_range = form_data.get("salary_range", user.salary_range)
     
     db.commit()
     

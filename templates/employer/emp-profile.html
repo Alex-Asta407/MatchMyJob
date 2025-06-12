@@ -44,35 +44,38 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company Name</label>
-            <p class="mt-1 text-gray-900 dark:text-white">{{ user.company_name }}</p>
+            <p class="mt-1 text-gray-900 dark:text-white">{{ user.name }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
             <p class="mt-1 text-gray-900 dark:text-white">{{ user.email }}</p>
           </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Location</label>
+            <p class="mt-1 text-gray-900 dark:text-white">{{ user.preferred_location or "Not provided" }}</p>
+          </div>
         </div>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
-            <p class="mt-1 text-gray-900 dark:text-white">{{ user.company_address or "Not provided" }}</p>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Positions Hiring For</label>
+            <p class="mt-1 text-gray-900 dark:text-white">{{ user.desired_job_title or "Not specified" }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Website</label>
-            {% if user.website %}
-            <a href="{{ user.website }}"
-              class="mt-1 text-purple-700 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"
-              target="_blank">
-              {{ user.website }}
-              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
-            {% else %}
-            <p class="mt-1 text-gray-500 dark:text-gray-400">Not provided</p>
-            {% endif %}
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Required Skills</label>
+            <p class="mt-1 text-gray-900 dark:text-white">{{ user.key_skills or "Not specified" }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Salary Range</label>
+            <p class="mt-1 text-gray-900 dark:text-white">${{ user.salary_range or "Not specified" }}</p>
           </div>
         </div>
+      </div>
+
+      <!-- Company Description -->
+      <div class="mt-6">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company Description</label>
+        <p class="mt-2 text-gray-900 dark:text-white whitespace-pre-line">{{ user.company_description or "No description
+          provided" }}</p>
       </div>
     </div>
 

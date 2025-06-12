@@ -23,6 +23,7 @@ class User(Base):
     key_skills = Column(String, nullable=True)
     preferred_location = Column(String, nullable=True)
     salary_range = Column(String, nullable=True)
+    company_description = Column(String, nullable=True)  # New field for company description
     
     resumes      = relationship(
         "Resume",
