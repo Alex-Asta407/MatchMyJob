@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header Section -->
+    <div class="bg-white dark:bg-gray-800 shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Welcome, {{ current_user.name }}</h1>
+                <div class="flex space-x-4">
+                    <a href="{{ url_for('applicant.edit_profile') }}"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-user-edit mr-2"></i>Edit Profile
+                    </a>
+                    <a href="{{ url_for('applicant.upload_resume') }}"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <i class="fas fa-upload mr-2"></i>Upload Resume
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                            <i class="fas fa-file-alt text-white text-xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Resumes
+                                </dt>
+                                <dd class="text-2xl font-semibold text-gray-900 dark:text-white">{{ resumes|length }}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                            <i class="fas fa-paper-plane text-white text-xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Applications
+                                    Sent</dt>
+                                <dd class="text-2xl font-semibold text-gray-900 dark:text-white">{{ applications|length
+                                    }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                            <i class="fas fa-briefcase text-white text-xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Available Jobs
+                                </dt>
+                                <dd class="text-2xl font-semibold text-gray-900 dark:text-white">{{ jobs|length }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumes Section -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-8">
+            <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white">Your Resumes</h2>
+                <a href="{{ url_for('applicant.upload_resume') }}"
+                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    <i class="fas fa-plus mr-2"></i>Add New
+                </a>
+            </div>
+            <div class="border-t border-gray-200 dark:border-gray-700">
+                {% if resumes %}
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for resume in resumes %}
+                    <li class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-file-alt text-indigo-500 text-xl"></i>
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ resume.filename }}
+                                    </h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Uploaded {{
+                                        resume.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <a href="{{ url_for('applicant.view_resume', resume_id=resume.id) }}"
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50">
+                                    <i class="fas fa-eye mr-1.5"></i>View
+                                </a>
+                                <form action="{{ url_for('applicant.delete_resume', resume_id=resume.id) }}"
+                                    method="POST" class="inline">
+                                    <button type="submit"
+                                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
+                                        onclick="return confirm('Are you sure you want to delete this resume?')">
+                                        <i class="fas fa-trash mr-1.5"></i>Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-file-alt text-4xl mb-2"></i>
+                    <p>No resumes uploaded yet.</p>
+                    <a href="{{ url_for('applicant.upload_resume') }}"
+                        class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                        Upload your first resume
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Applications Section -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-8">
+            <div class="px-4 py-5 sm:px-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white">Recent Applications</h2>
+            </div>
+            <div class="border-t border-gray-200 dark:border-gray-700">
+                {% if applications %}
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for application in applications[:5] %}
+                    <li class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ application.job.title
+                                    }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    Applied on {{ application.applied_at.strftime('%Y-%m-%d %H:%M') }}
+                                </p>
+                            </div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if application.status == 'pending' %}
+                                    bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
+                                {% elif application.status == 'accepted' %}
+                                    bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                {% elif application.status == 'rejected' %}
+                                    bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
+                                {% endif %}">
+                                {{ application.status|title }}
+                            </span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-paper-plane text-4xl mb-2"></i>
+                    <p>No applications yet.</p>
+                    <a href="{{ url_for('applicant.jobs') }}"
+                        class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                        Browse available jobs
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recommended Jobs Section -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white">Recommended Jobs</h2>
+            </div>
+            <div class="border-t border-gray-200 dark:border-gray-700">
+                {% if jobs %}
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for job in jobs[:5] %}
+                    <li class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ job.title }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ job.company }}</p>
+                            </div>
+                            <a href="{{ url_for('applicant.view_job', job_id=job.id) }}"
+                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50">
+                                <i class="fas fa-external-link-alt mr-1.5"></i>View
+                            </a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-briefcase text-4xl mb-2"></i>
+                    <p>No jobs available at the moment.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

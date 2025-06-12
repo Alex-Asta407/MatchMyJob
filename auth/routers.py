@@ -30,7 +30,7 @@ def login_post(request: Request, email: str = Form(...), password: str = Form(..
 
     if not user:
         log_event(db, "Failed Login", "User not found", email=email, ip=ip)
-        return RedirectResponse("/login?msg=notfound", status_code=303)
+        return RedirectResponse("/login?msg=User+is+not+found+in+the+system", status_code=303)
 
     if not verify_password(password, user.hashed_password):
         log_event(db, "Failed Login", "Invalid password", email=email, ip=ip)
@@ -162,21 +162,6 @@ async def register(
                 "error": str(e)
             }
         )
-
-    # Set role-specific fields
-    if role == "job_seeker":
-        new_user.current_job_title = current_job_title
-        new_user.years_experience = years_experience
-        new_user.desired_job_title = desired_job_title
-        new_user.key_skills = key_skills
-        new_user.preferred_location = preferred_location
-        new_user.salary_range = salary_range
-    else:  # employer
-        new_user.company_name = company_name
-        new_user.company_size = company_size
-        new_user.industry = industry
-        new_user.location = location
-        new_user.website = website
     
     db.add(new_user)
     db.commit()
@@ -185,10 +170,10 @@ async def register(
     send_verification_email(email, verification_token)
 
     # Redirect to appropriate dashboard
-    if role == "job_seeker":
-        return RedirectResponse(url="/applicant/profile", status_code=303)
-    else:
-        return RedirectResponse(url="/employer/home", status_code=303)
+    return RedirectResponse(
+        "/login?msg=Registration+successful!+Please+check+your+email+for+a+verification+link.",
+        status_code=303
+    )
 
 @router.get("/logout")
 def logout(request: Request, response: Response, db: Session = Depends(get_db), user = Depends(get_current_user)):
