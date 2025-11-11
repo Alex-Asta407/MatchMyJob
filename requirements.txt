@@ -4,3 +4,4 @@ pdf2image
 PyPDF2
 Pillow
 pdfplumber
+pdfminer.six>=20251107 # not directly required, pinned by Snyk to avoid a vulnerability
